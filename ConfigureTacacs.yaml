@@ -1,0 +1,70 @@
+---
+## This ansible playbook let's you configure two tacacs servers ## Cisco device
+
+## We are using Cisco ISE for this example
+ 
+- name: Configuring TACACS with two Servers
+  hosts: SWITCH01
+  gather_facts: false
+  connection: local
+  vars:
+    creds:
+      host: "{{ ansible_host }}"
+      username: "anouarabd"
+      password: "password"
+  tasks:
+  - name: Checking tacacs server reachability from a loopback interface
+    ios_command: 
+      provider: "{{ creds }}"
+      commands:
+        - ping 172.16.1.1 source loopback1
+      waitfor: 
+         - result[0] not contains '0/5'
+  - name: Enabling AAA new-model
+    ios_config:
+      provider: "{{ creds }}"   
+      authorize: yes
+      lines:
+         - aaa new-model 
+  - name: Adding Tacacs server 1 
+    ios_config:
+      provider: "{{ creds }}"
+      authorize: yes
+      lines: 
+         - address ipv4 172.16.1.1
+         - key Anouarabd#2020 
+      parents: tacacs server ISE1-TACACS
+  - name: Adding Tacacs server 2 
+    ios_config:
+      provider: "{{ creds }}"
+      authorize: yes
+      lines: 
+         - address ipv4 172.16.1.2
+         - key Anouarabd#2020 
+      parents: tacacs server ISE2-TACACS 
+  - name: Configuring AAA
+    ios_config:
+      provider: "{{ creds }}" 
+      authorize: yes
+      lines:
+         - aaa authentication login default group tacacs+ local 
+         - aaa authorization console 
+         - aaa authorization exec default group tacacs+ local 
+         - aaa accounting exec default start-stop group tacacs+ 
+         - ip tacacs source-interface loopback1
+  - name: Testing authentication with "test aaa" command
+    ios_command: 
+      commands:
+        - test aaa group tacacs tacacs_user tacacs_pass new-code
+      provider: "{{ creds }}"
+      authorize: yes      
+      waitfor: 
+         - result[0] not contains 'rejected'   
+  - name: Enabling authorization and accounting commands
+    ios_config:
+      provider: "{{ creds }}"
+      authorize: yes
+      lines:
+         - aaa authorization commands 15 default group tacacs+ local  
+         - aaa accounting commands 15 default start-stop group tacacs+            
+...
