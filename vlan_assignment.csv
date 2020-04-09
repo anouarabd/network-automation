@@ -1,0 +1,3 @@
+Interface;Mode;Vlan ID;Description
+1;Trunk;50;To server 1
+2;Access;60;To server 2
