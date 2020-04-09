@@ -1,5 +1,5 @@
 ---
-## This ansible playbook lets you configure two tacacs servers ## Cisco device
+## This ansible playbook lets you configure two tacacs servers ## Cisco devices
 
 ## We are using Cisco ISE for this example
  
