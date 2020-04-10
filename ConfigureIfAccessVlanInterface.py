@@ -1,7 +1,8 @@
-## This script gets all interfaces configuration by running "show running-config | section interfaces Gi " and making your personal configuration
+## This script gets all interfaces configuration by running "show running-config | section interfaces Gi " and adds your personal configuration
 ## for interfaces which are assigned to a particular vlan
 ## it can be used to configure dot1x for a specific users' vlan (dot1x configuration per interface should be available in "commands_file.txt" file)
 ## script saves the original configuration and the new generated one in two separate files
+## Anouarabd
 
 from netmiko import ConnectHandler
 from getpass import getpass
