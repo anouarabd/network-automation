@@ -2,6 +2,7 @@
 ## This script allows you to create Sophos business application rule by entering only : public IP & private IP & service & policy name
 ## Script will check if objects already exist and will show you objects' names, otherwise it will automatically create them and ask you to choose the name
 ## Protected server's zone is automatically detected by checking subinterfaces IP
+## Anouarabd
 
 import sys
 import requests
@@ -48,7 +49,7 @@ for data in root.findall('VLAN'):
       zone = data.find('Zone').text
       if str(zone_interface_subnet) in str(IPAddress):
           detected_zone=zone
-print("Le serveur appartient à la zone " + detected_zone)
+print("This server belongs to  " + detected_zone + " zone")
 
 ## Looking for private host object name/existence
 
