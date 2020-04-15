@@ -37,17 +37,17 @@ for test in range(len(x)):
     services +=service
 ## Check zone of Private IP ; all protected servers are directly connected and their gateways are subinterfaces in FW
 
-tmp=private_ip.split('.')
-zone_interface_subnet=tmp[0]+"." +tmp[1]+"."+tmp[2]+"."
 GetVlanObjects="""<Get><VLAN></VLAN></Get></Request>"""
 GetVlanResponse = requests.get(url+login+GetVlanObjects, verify = False).content
 root = ElementTree.fromstring(GetVlanResponse)
-if "192.168.99." in str(private_ip):
-    detected_zone = "LAN"
+if ipaddress.ip_address(private_ip) in ipaddress.ip_network('192.168.58.0/24'): ## Exceptional case ; forcing it manually
+    detected_zone = "MGMT"
 for data in root.findall('VLAN'):
       IPAddress = data.find('IPAddress').text
+      tmp=IPAddress.split('.')
+      interface_subnet=tmp[0]+"." +tmp[1]+"."+tmp[2]+"."+"0/24"
       zone = data.find('Zone').text
-      if str(zone_interface_subnet) in str(IPAddress):
+      if ipaddress.ip_address(private_ip) in ipaddress.ip_network(interface_subnet):
           detected_zone=zone
 print("This server belongs to  " + detected_zone + " zone")
 
@@ -63,7 +63,7 @@ root = ElementTree.fromstring(GetPrivateHostResponse)
 private_host_existence = 'Name' in str(GetPrivateHostResponse)
 if private_host_existence:
       host_private_name = root.find('IPHost').find('Name').text
-      print("Host object with IP " + private_ip + " is already existing "+ host_private_name)
+      print("Host object with IP " + private_ip + " is already existing under the name "+ host_private_name)
       #print(private_host_existence)
 if not private_host_existence:
       host_private_name= input("No host with " + private_ip + " already exists, choose the name of object : ")
@@ -83,7 +83,7 @@ root = ElementTree.fromstring(GetPublicHostResponse)
 public_host_existence = 'Name' in str(GetPublicHostResponse)
 if public_host_existence:
       host_public_name = root.find('IPHost').find('Name').text
-      print("Host object with IP " + public_ip + " is already existing "+ host_public_name)
+      print("Host object with IP " + public_ip + " is already existing under the name "+ host_public_name)
 if not public_host_existence:
       host_public_name= input("No host with " + public_ip + " already exists, choose the name of object : ")
       AddPublicHostXML = """<Set operation="add"><IPHost><Name>""" + host_public_name + """</Name><IPFamily>IPv4</IPFamily><HostType>IP</HostType><IPAddress>""" + public_ip + """</IPAddress></IPHost></Set></Request>"""
