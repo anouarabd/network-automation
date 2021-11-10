@@ -45,7 +45,7 @@ for devices in devices_list:
 
     #print (output) ## enable if commands syntax check is needed ; commands differ from one device to another
     
-    print('Configuration applied successfuly to ' + devices) 
+    print('Configuration has been applied successfuly to ' + devices) 
    except:
         print('Connection to ' + devices + ' device has failed')
  
